@@ -1,8 +1,8 @@
 //
-//  Time.swift
+//  TimeDuration.swift
 //
 //
-//  Created by Dr. Brandon Wiley on 2/26/24.
+//  Created by Dr. Brandon Wiley on 2/27/24.
 //
 
 import Foundation
@@ -11,35 +11,26 @@ import Datable
 import Number
 import Text
 
-public struct Time: TimeProtocol
+public struct TimeDuration
 {
-    public static let e3: UInt64 = 1000
-    public static let e6: UInt64 = 1000000
-    public static let e9: UInt64 = 1000000000
-
-    public static func < (lhs: Time, rhs: Time) -> Bool
+    public static func < (lhs: TimeDuration, rhs: TimeDuration) -> Bool
     {
         let rescaled = rhs.rescale(to: lhs.resolution)
         return lhs.ticks < rescaled.ticks
     }
-    
-    public var maybeNetworkData: Data?
+
+    public var data: Data
     {
         let typeByte = self.resolution.rawValue
         let typeData = Data(array: [typeByte])
 
-        guard let tickData = self.ticks.maybeNetworkData else
-        {
-            return nil
-        }
-
-        return typeData + tickData
+        return typeData + self.ticks.maybeNetworkData!
     }
 
     let resolution: TimeResolution
     let ticks: UInt64
 
-    public init?(maybeNetworkData data: Data)
+    public init?(data: Data)
     {
         guard data.count > 1 else
         {
@@ -73,36 +64,31 @@ public struct Time: TimeProtocol
         self.init(resolution: resolution, ticks: ticks)
     }
 
-    public func toDate() -> Date
+    @available(iOS 16, macOS 14, *)
+    public func toDuration() -> Duration
     {
         switch self.resolution
         {
             case .nanoseconds:
-                return Date(timeIntervalSince1970: Double(self.ticks) / Double(Time.e9))
+                return Duration.nanoseconds(self.ticks)
 
             case .milliseconds:
-                return Date(timeIntervalSince1970: Double(self.ticks) / Double(Time.e3))
+                return Duration.milliseconds(self.ticks)
 
             case .seconds:
-                return Date(timeIntervalSince1970: Double(self.ticks))
+                return Duration.seconds(self.ticks)
         }
     }
 
+    @available(iOS 16, macOS 14, *)
     public func toText() -> Text
     {
-        let date = self.toDate()
+        let date = self.toDuration()
         let string = date.description
         return string.text
     }
 
-    public func hour() -> Number
-    {
-        let date = self.toDate()
-        let hour = Calendar.current.component(.hour, from: date)
-        return .int(hour)
-    }
-
-    public func rescale(to targetResolution: TimeResolution) -> Time
+    public func rescale(to targetResolution: TimeResolution) -> TimeDuration
     {
         switch self.resolution
         {
@@ -110,39 +96,39 @@ public struct Time: TimeProtocol
                 switch targetResolution
                 {
                     case .nanoseconds:
-                        return Time(resolution: targetResolution, ticks: self.ticks)
+                        return TimeDuration(resolution: targetResolution, ticks: self.ticks)
 
                     case .milliseconds:
-                        return Time(resolution: targetResolution, ticks: self.ticks / Time.e6)
+                        return TimeDuration(resolution: targetResolution, ticks: self.ticks / Time.e6)
 
                     case .seconds:
-                        return Time(resolution: targetResolution, ticks: self.ticks / Time.e9)
+                        return TimeDuration(resolution: targetResolution, ticks: self.ticks / Time.e9)
                 }
 
             case .milliseconds:
                 switch targetResolution
                 {
                     case .nanoseconds:
-                        return Time(resolution: targetResolution, ticks: self.ticks * Time.e6)
+                        return TimeDuration(resolution: targetResolution, ticks: self.ticks * Time.e6)
 
                     case .milliseconds:
-                        return Time(resolution: targetResolution, ticks: self.ticks)
+                        return TimeDuration(resolution: targetResolution, ticks: self.ticks)
 
                     case .seconds:
-                        return Time(resolution: targetResolution, ticks: self.ticks / Time.e3)
+                        return TimeDuration(resolution: targetResolution, ticks: self.ticks / Time.e3)
                 }
 
             case .seconds:
                 switch targetResolution
                 {
                     case .nanoseconds:
-                        return Time(resolution: targetResolution, ticks: self.ticks * Time.e9)
+                        return TimeDuration(resolution: targetResolution, ticks: self.ticks * Time.e9)
 
                     case .milliseconds:
-                        return Time(resolution: targetResolution, ticks: self.ticks * Time.e3)
+                        return TimeDuration(resolution: targetResolution, ticks: self.ticks * Time.e3)
 
                     case .seconds:
-                        return Time(resolution: targetResolution, ticks: self.ticks)
+                        return TimeDuration(resolution: targetResolution, ticks: self.ticks)
                 }
         }
     }

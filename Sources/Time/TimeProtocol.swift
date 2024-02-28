@@ -18,7 +18,7 @@ public protocol TimeProtocol:
     Comparable,
     Equatable,
     Hashable,
-    MaybeDatable
+    MaybeNetworkDatable
 {
     func toDate() -> Date
     func toText() -> Text
