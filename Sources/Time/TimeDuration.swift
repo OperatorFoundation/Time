@@ -133,3 +133,21 @@ public struct TimeDuration
         }
     }
 }
+
+extension TimeDuration: CustomStringConvertible
+{
+    public var description: String
+    {
+        switch self.resolution
+        {
+            case .milliseconds:
+                return "\(self.ticks) milliseconds"
+
+            case .nanoseconds:
+                return "\(self.ticks) nanoseconds"
+
+            case .seconds:
+                return "\(self.ticks) seconds"
+        }
+    }
+}

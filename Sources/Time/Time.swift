@@ -147,3 +147,11 @@ public struct Time: TimeProtocol
         }
     }
 }
+
+extension Time: CustomStringConvertible
+{
+    public var description: String
+    {
+        return self.toDate().description
+    }
+}
