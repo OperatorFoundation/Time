@@ -146,6 +146,13 @@ public struct Time: TimeProtocol
                 }
         }
     }
+
+    public func seconds() -> Number
+    {
+        let secondsDuration = self.rescale(to: .seconds)
+        let seconds = secondsDuration.ticks
+        return Number.uint64(seconds)
+    }
 }
 
 extension Time: CustomStringConvertible
