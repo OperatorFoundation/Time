@@ -25,5 +25,4 @@ public protocol TimeProtocol:
     func hour() -> Number
 //    func dayOfWeek() -> Number
     func rescale(to: TimeResolution) -> Time
-    func seconds() -> Number
 }

@@ -73,9 +73,4 @@ public final class MutableTime: TimeProtocol
     {
         return self.time.hour()
     }
-
-    public func seconds() -> Number
-    {
-        return self.time.seconds()
-    }
 }
