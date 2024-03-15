@@ -27,8 +27,8 @@ public struct TimeDuration
         return typeData + self.ticks.maybeNetworkData!
     }
 
-    let resolution: TimeResolution
-    let ticks: UInt64
+    public let resolution: TimeResolution
+    public let ticks: UInt64
 
     public init?(data: Data)
     {
